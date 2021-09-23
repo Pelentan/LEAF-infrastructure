@@ -24,8 +24,5 @@ export class LeafNfsStack extends cdk.Stack {
       description: `This is the security group for the nfs`,
       allowAllOutbound: true
     })
-
-    
-
   }
 }

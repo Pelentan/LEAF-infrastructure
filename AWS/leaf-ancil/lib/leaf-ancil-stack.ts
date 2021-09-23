@@ -13,11 +13,13 @@ import { CfnParameter, Construct } from '@aws-cdk/core';
 export class LeafAncilStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
-    // const targetEnv = new cdk.CfnParameter(this, 'targetEnv', {
-    //   type: 'String',
-    //   description: 'The name of the environment to put this in.',
-    // });
+    /**
+     * Required contect variables:
+     *    targetEnv (prod, preprod, dev, uat)
+     *    orgName (text)
+     *    
+     * example build:  cdk deploy -c targetEnv=prod -c orgName=Vizn74
+     */
     
     console.log(this.node.tryGetContext('orgName'));
     

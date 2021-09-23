@@ -8,13 +8,18 @@ import * as ecs_pats from '@aws-cdk/aws-ecs-patterns';
 import * as ssm from '@aws-cdk/aws-ssm';
 
 // Auto imports.
-import { CfnParameter } from '@aws-cdk/core';
 import { Repository } from '@aws-cdk/aws-ecr';
 import { Duration } from '@aws-cdk/aws-iam/node_modules/@aws-cdk/core';
 
 export class LeafAppLegacyStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+    /**
+     * Required contect variables:
+     *    targetEnv (prod, preprod, dev, uat)
+     *    
+     * example build:  cdk deploy -c targetEnv=prod -c orgName=Vizn74
+     */
 
     // Build out the variables going to be used
     const tags = props?.tags;
@@ -24,9 +29,9 @@ export class LeafAppLegacyStack extends cdk.Stack {
 
     // Build out the AWS handles for objects already existing in AWS
     const vpc_name: string = build_vars?.vpc_name ?? `leaf-dev`;
-    // const vpc = Vpc.fromLookup(this, 'external-vpc', {
-    //   vpcName: vpc_name,
-    // });
+    const vpc = Vpc.fromLookup(this, 'vpc', {
+      vpcName: vpc_name,
+    });
 
     const leaf_image: string = `${build_vars?.image_base ?? `leaf-monolith`}:${build_vars?.image_version ?? `1.0`}`;
     console.log(`Image to build with: ${leaf_image}`);
@@ -66,8 +71,6 @@ export class LeafAppLegacyStack extends cdk.Stack {
       port: 80,
       open: true,
     })
-
-    const vpc = new ec2.Vpc(this, 'VPC');
 
     const lb = new elb.ApplicationLoadBalancer(this, 'LB', {
       vpc: vpc,
