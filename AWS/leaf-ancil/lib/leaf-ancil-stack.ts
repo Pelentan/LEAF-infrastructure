@@ -1,6 +1,6 @@
 // Manual imports
 import * as cdk from '@aws-cdk/core';
-import { Subnet, Volume, Vpc, SecurityGroup, Peer, Port } from '@aws-cdk/aws-ec2';
+import { Subnet, Volume, Vpc, SecurityGroup, Peer, Port, Connections } from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as cr from '@aws-cdk/custom-resources';
 import * as ssm from '@aws-cdk/aws-ssm';
@@ -74,7 +74,13 @@ export class LeafAncilStack extends cdk.Stack {
       allowAllOutbound: true
     })
 
-    efs_sg.addIngressRule(Peer.anyIpv4(), Port.allTraffic(), `Allow only traffice from the ec2 sg`)
+    efs_sg.connections.allowFrom(
+      new Connections({
+        securityGroups: [ec2_sg]
+      }),
+      Port.tcp(2049),
+      `Allows traffic only from those with the correct security groups`
+    )
 
 
 
