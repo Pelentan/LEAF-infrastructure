@@ -178,5 +178,11 @@
         ]
       }
     ]
+  },
+  "vpc-provider:account=456456143286:filter.tag:working_name=leaf-dev:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-04a4f967fddbb1e49",
+    "vpcCidrBlock": "10.1.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": []
   }
 }

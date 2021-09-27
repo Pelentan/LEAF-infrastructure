@@ -1,6 +1,6 @@
 // Manual imports
 import * as cdk from '@aws-cdk/core';
-import { Subnet, Volume, Vpc } from '@aws-cdk/aws-ec2';
+import { Subnet, Volume, Vpc, SecurityGroup, Peer, Port } from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as cr from '@aws-cdk/custom-resources';
 import * as ssm from '@aws-cdk/aws-ssm';
@@ -8,6 +8,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 
 // Auto imports.
 import { CfnParameter, Construct } from '@aws-cdk/core';
+import { Ec2Service } from '@aws-cdk/aws-ecs';
 
 
 export class LeafAncilStack extends cdk.Stack {
@@ -26,60 +27,98 @@ export class LeafAncilStack extends cdk.Stack {
     const tags = props?.tags;
     const target_env: string = this.node.tryGetContext('targetEnv');
     const build_vars = this.node.tryGetContext(target_env);
+    const non_secure_env_vars = build_vars.non_secure_env_vars;
+    const secure_env_vars = this.node.tryGetContext(`secure_env_vars`);
 
-    const testVals: string = this.node.tryGetContext('jojo');
-    console.log(testVals ?? "Nothing found");
+    const vpc_name: string = build_vars?.vpc_name ?? `leaf-dev`;    
+    const vpc = Vpc.fromLookup(this, 'vpc', {
+      tags: {"working_name": vpc_name}
+    }); 
 
-    console.log(target_env);
-    console.log(build_vars?.efs_name);
+    console.log("target env: " + target_env);
+    console.log("non secure env vars: " +non_secure_env_vars);
+    console.log("didi: " + non_secure_env_vars.toga);
 
-    const vpam  = ssm.StringParameter.fromStringParameterAttributes(this, 'vpam', {
-      parameterName: '/leaf/vpc/prod'
-    });
-    new cdk.CfnOutput(this, 'jojowasafrog: ', {
-      value: vpam.stringValue
-    })
 
-    const vpc_name: string = build_vars?.vpc_name ?? `leaf-dev`;
-    const vpc = Vpc.fromLookup(this, 'external-vpc', {
-      vpcName: vpc_name
-    });    
+    /**
+     * Builds the values in the Parameter Store for the specified target application runtime environment if not already built.
+     * Is given as a string list that is defined in cdk.json.
+     * This should also remove all variables in the list on AWS that are _not_ specified in cdk.json.  
+     */
 
-    const toga = ssm.StringParameter.fromStringParameterAttributes(this, 'toga', {
-      parameterName: '/leaf/toga',
-      simpleName: false
-    });
-    console.log("from ssm :  " + toga.stringValue)
+    console.log(typeof(non_secure_env_vars));
 
-    const leaf_efs = new efs.FileSystem(this, 'leaf_filesystem', {
-      fileSystemName: 'leaf-' + target_env +'-legacy-efs',
+    for (let key in non_secure_env_vars){
+      let value = non_secure_env_vars[key] ? non_secure_env_vars[key] : "null";
+      console.log(`key: ${key} val: ${value}`)
+      new ssm.StringParameter(this, `ev_${key}`, {
+        parameterName: key,
+        stringValue: value
+      })
+    }
+
+    const ec2_sg = new SecurityGroup(this, 'ec2_sg', {
       vpc: vpc,
-      enableAutomaticBackups: false,
-      encrypted: true,
-      lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
-      performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, 
-    });
-
-    new cdk.CfnOutput(this, 'bokoo: ', {
-      value: leaf_efs.fileSystemId
+      description: `Security group to allow ec2 to access efs`,
+      securityGroupName: `ec2_sg`,
+      allowAllOutbound: true
     })
 
-    new cdk.CfnOutput(this, "paramter-pull", {
-      value: toga.stringValue,
+    ec2_sg.addIngressRule(Peer.anyIpv4(), Port.tcp(22), `Allow ssh in`);
+    const ec2_sg_id = ec2_sg.securityGroupId;
+
+    const efs_sg = new SecurityGroup(this, 'efs_sg', {
+      vpc: vpc,
+      description: `Security group for the efs to connect to ec2s`,
+      securityGroupName: `efs_sg`,
+      allowAllOutbound: true
     })
 
-    let paraName = `/leaf/efs-${target_env}-legacy`;
-    let isstring = typeof paraName
-    new cdk.CfnOutput(this, 'paramTarget: ', {
-      value: `${paraName} -- ${isstring}`,
-    });
+    efs_sg.addIngressRule(Peer.anyIpv4(), Port.allTraffic(), `Allow only traffice from the ec2 sg`)
 
-    // paraName = "/leaf/efs-prod-legacy";
-    const efs_id_param = new ssm.StringParameter(this, `efs-id_param`, {
-      parameterName: paraName,
-      description: `The efs id for the legacy in the ${target_env} environment/vpc`, 
-      stringValue: leaf_efs.fileSystemId
-    });    
+
+
+
+    // const vpam  = ssm.StringParameter.fromStringParameterAttributes(this, 'vpam', {
+    //   parameterName: '/leaf/vpc/prod'
+    // });
+    // new cdk.CfnOutput(this, 'jojowasafrog: ', {
+    //   value: vpam.stringValue
+    // })
+
+   
+
+    // const toga = ssm.StringParameter.fromStringParameterAttributes(this, 'toga', {
+    //   parameterName: '/leaf/toga',
+    //   simpleName: false
+    // });
+    // console.log("from ssm :  " + toga.stringValue)
+
+    // const leaf_efs = new efs.FileSystem(this, 'leaf_filesystem', {
+    //   fileSystemName: 'leaf-' + target_env +'-legacy-efs',
+    //   vpc: vpc,
+    //   enableAutomaticBackups: false,
+    //   encrypted: true,
+    //   lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
+    //   performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, 
+    // });
+
+    // new cdk.CfnOutput(this, 'bokoo: ', {
+    //   value: leaf_efs.fileSystemId
+    // })
+
+    // let paraName = `/leaf/efs-${target_env}-legacy`;
+    // let isstring = typeof paraName
+    // new cdk.CfnOutput(this, 'paramTarget: ', {
+    //   value: `${paraName} -- ${isstring}`,
+    // });
+
+    // // paraName = "/leaf/efs-prod-legacy";
+    // const efs_id_param = new ssm.StringParameter(this, `efs-id_param`, {
+    //   parameterName: paraName,
+    //   description: `The efs id for the legacy in the ${target_env} environment/vpc`, 
+    //   stringValue: leaf_efs.fileSystemId
+    // });    
 
 
     // const appFiles = new efs.AccessPoint(this, 'app_access_point', {

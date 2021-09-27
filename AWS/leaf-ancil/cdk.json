@@ -15,11 +15,36 @@
     "@aws-cdk/aws-lambda:recognizeVersionProps": true,
     "prod": {
       "vpc_name": "leaf-prod",
-      "efs_name": "leaf-prod-legacy-efs"
+      "efs_name": "leaf-prod-efs", 
+      "non_secure_env_vars": {
+        "toga": "blue"
+      }
     },
     "dev": {
       "vpc_name": "leaf-dev",
-      "efs_name": "leaf-dev-legacy-efs"
+      "efs_name": "leaf-dev-efs", 
+      "non_secure_env_vars": {
+        "toga": "blue"
+      }
+    },
+    "proto": {
+      "vpc_name": "leaf-dev",
+      "efs_name": "leaf-proto-efs", 
+      "non_secure_env_vars": {
+        "toga": "blue",
+        "mysql_host": "mysql-proto",
+        "mysql_db": "",
+        "mysql_user": "tester",
+        "app_user": "tester",
+        "nexus_url": "",
+        "auth_url": "",
+        "host_url": "",
+        "build_uid": "1000"
+
+      }
+    }, 
+    "secure_env_vars": {
+      "toga": "plaid"
     }
   }
 }

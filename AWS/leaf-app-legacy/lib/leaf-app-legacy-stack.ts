@@ -30,7 +30,7 @@ export class LeafAppLegacyStack extends cdk.Stack {
     // Build out the AWS handles for objects already existing in AWS
     const vpc_name: string = build_vars?.vpc_name ?? `leaf-dev`;
     const vpc = Vpc.fromLookup(this, 'vpc', {
-      vpcName: vpc_name,
+      tags: {"working_name": vpc_name}
     });
 
     const leaf_image: string = `${build_vars?.image_base ?? `leaf-monolith`}:${build_vars?.image_version ?? `1.0`}`;
