@@ -3,14 +3,14 @@ kind: ClusterRole
 metadata:
   name: prometheus
 rules:
-- apigroups: [""]
+- apiGroups: [""]
   resources:
   - nodes
   - services
   - endpoints
   - pods
   verbs: ["get", "list", "watch"]
-- apigroups:
+- apiGroups:
   - extenstions
   resources:
   - ingresses
