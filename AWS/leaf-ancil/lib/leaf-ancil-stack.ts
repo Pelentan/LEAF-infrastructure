@@ -29,6 +29,7 @@ export class LeafAncilStack extends cdk.Stack {
     const build_vars = this.node.tryGetContext(target_env);
     const non_secure_env_vars = build_vars.non_secure_env_vars;
     const secure_env_vars = this.node.tryGetContext(`secure_env_vars`);
+    const org_name = this.node.tryGetContext(`orgName`);
 
     const vpc_name: string = build_vars?.vpc_name ?? `leaf-dev`;    
     const vpc = Vpc.fromLookup(this, 'vpc', {
@@ -46,7 +47,7 @@ export class LeafAncilStack extends cdk.Stack {
      * This should also remove all variables in the list on AWS that are _not_ specified in cdk.json.  
      */
 
-    console.log(typeof(non_secure_env_vars));
+    // console.log(typeof(non_secure_env_vars));
 
     for (let key in non_secure_env_vars){
       let value = non_secure_env_vars[key] ? non_secure_env_vars[key] : "null";
@@ -57,23 +58,27 @@ export class LeafAncilStack extends cdk.Stack {
       })
     }
 
+    /**
+     * Creates the needed security groups
+     */
+
+    // SG for EC2.  Wide open
     const ec2_sg = new SecurityGroup(this, 'ec2_sg', {
       vpc: vpc,
       description: `Security group to allow ec2 to access efs`,
       securityGroupName: `ec2_sg`,
       allowAllOutbound: true
     })
-
     ec2_sg.addIngressRule(Peer.anyIpv4(), Port.tcp(22), `Allow ssh in`);
     const ec2_sg_id = ec2_sg.securityGroupId;
 
+    // SG for EFS from EC2.  Locked to above SG for ingress.
     const efs_sg = new SecurityGroup(this, 'efs_sg', {
       vpc: vpc,
       description: `Security group for the efs to connect to ec2s`,
       securityGroupName: `efs_sg`,
       allowAllOutbound: true
     })
-
     efs_sg.connections.allowFrom(
       new Connections({
         securityGroups: [ec2_sg]
@@ -82,6 +87,17 @@ export class LeafAncilStack extends cdk.Stack {
       `Allows traffic only from those with the correct security groups`
     )
 
+    /**
+     * Create EFS for specific Domain named by orgName input
+     */
+
+    const domain_efs = new efs.FileSystem(this, org_name, {
+      fileSystemName: org_name,
+      vpc: vpc,
+      securityGroup: efs_sg,
+      performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
+      lifecyclePolicy: efs.LifecyclePolicy.AFTER_60_DAYS,
+    })
 
 
 
