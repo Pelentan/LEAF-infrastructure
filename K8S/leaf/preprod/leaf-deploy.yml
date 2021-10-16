@@ -89,6 +89,8 @@ spec:
               name: leaf-envprops
           - secretRef:
               name: cdw-access
+          - secretRef:
+              name: krb-access
 
   
         lifecycle:
