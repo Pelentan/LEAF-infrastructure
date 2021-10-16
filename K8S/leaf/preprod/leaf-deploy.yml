@@ -52,38 +52,6 @@ spec:
         env:
            - name: LAST_BUILD_DATE
              value: "Thur, January 1, 1970 00:00:00 GMT"
-          #  - name: CDW_HOST
-          #    valueFrom:
-          #       secretKeyRef:
-          #          name: cdw-access
-          #          key: host
-          #  - name: CDW_USER
-          #    valueFrom:
-          #       secretKeyRef:
-          #          name: cdw-access
-          #          key: user
-          #  - name: CDW_PASSWORD
-          #    valueFrom:
-          #       secretKeyRef:
-          #          name: cdw-access
-          #          key: password
-          #  - name: KRB_DOMAIN
-          #    valueFrom:
-          #       secretKeyRef:
-          #          name: krb-access
-          #          key: host
-          #  - name: KRB_USER
-          #    valueFrom:
-          #       secretKeyRef:
-          #          name: krb-access
-          #          key: user
-          #  - name: KRB_PASSWORD
-          #    valueFrom:
-          #       secretKeyRef:
-          #          name: krb-access
-          #          key: password
-           - name: KRB_LOGIN
-             value: "$(KRB_USR)@$(KRB_HOST)"
         envFrom:
           - configMapRef:
               name: leaf-envprops
