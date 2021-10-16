@@ -80,8 +80,9 @@ spec:
                    key: password
            - name: KRB_LOGIN
              value: "$(KRB_USR)@$(KRB_HOST)"
-           - name: DB_ADDRESS
-             value: "leaf-preprod-mysql-db.ccrn7zmvpbm4.us-gov-west-1.rds.amazonaws.com"
+        envFrom:
+          - configMapRef:
+              name: leaf-envprops
 
   
         lifecycle:
