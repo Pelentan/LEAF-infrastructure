@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx
+  annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+       proxy_set_header REFERER $http_referer;
+       server_tokens off;
+       location  ~ ^/$ {
+                 return 301 https://leaf-preprod.va.gov/launchpad;
+       }
+spec:
+  tls:
+    - hosts:
+      - leaf-preprod.va.gov
+      # tls-secret should be created before applying ingress
+      secretName: leaf-preprod
+  rules:
+    - host: leaf-preprod.va.gov
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: leaf-svc-old
+            servicePort: 80
+#    - host: leaf-preprod.va.gov
+#      http:
+#        paths:
+#        - path: /piwik
+#          backend:
+#            serviceName: piwik-svc
+#            servicePort: 80   
+

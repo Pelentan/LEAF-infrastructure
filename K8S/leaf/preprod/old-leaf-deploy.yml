@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leaf-deploy-old
+  labels:
+    app: leaf-old
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      name: leaf-old
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        name: leaf-old
+        app: leaf-old
+    spec:
+      #securityContext:
+        #runAsUser: 33
+        #fsGroup: 33
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: leaf-volume
+          awsElasticBlockStore:
+            volumeID: vol-0b6d38d34ae33dd2c
+          #persistentVolumeClaim:
+            #claimName: leaf-pvc
+      imagePullSecrets:
+       - name: regcred
+      containers:
+      - name: leaf-pods
+        image: avdockerid/leaf:prod
+        envFrom:
+        - secretRef:
+            name: leafdb
+        imagePullPolicy: "Always"  
+        lifecycle:
+          postStart: # this could be a configmap and volume mount -patrick
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "printf \"root=leafnoreply@va.gov\nmailhub=smtp.va.gov:25\nFromLineOverride=YES\n\" > /etc/ssmtp/ssmtp.conf"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /var/www/
+          name: leaf-volume
+      #volumes:
+      #- hostPath:
+       #   path: /var/www/html
+        #  type: DiriectoryOrCreate
+        #name: leaf-volume

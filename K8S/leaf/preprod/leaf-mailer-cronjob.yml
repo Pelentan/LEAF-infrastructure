@@ -1,0 +1,114 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: leaf-mailer-cronjob
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Replace
+  jobTemplate: 
+    spec: 
+      template:
+        spec:
+          volumes:
+           - name: leaf-volume
+             nfs:
+                server: 10.247.111.137
+                path: /
+          imagePullSecrets:
+           - name: regcred
+          containers:
+          - name: leaf-mailer-cronjopb
+            image: avdockerid/leaf:11132020
+            lifecycle:
+              postStart: # this could be a configmap and volume mount -patrick
+                exec:
+                  command:
+                    - "/bin/sh"
+                    - "-c"
+                    - "printf \"root=leafnoreply@va.gov\nmailhub=smtp-svc:25\nFromLineOverride=YES\n\" > /etc/ssmtp/ssmtp.conf"
+                #- "printf \"root=leafnoreply@va.gov\nmailhub=smtp.va.gov:25\nFromLineOverride=YES\n\" > /etc/ssmtp/ssmtp.conf"
+            args:
+            - /usr/bin/php
+            - /var/www/html/LEAF_Request_Portal/mailer/mailer.php
+            env:
+             - name: S3_BUCKET_NAME
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: S3_BUCKET_NAME
+             - name: AWS_REGION
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: AWS_REGION
+             - name: DATABASE_HOST
+               valueFrom:
+                configMapKeyRef:
+                  name: leaf-envprops
+                  key: DATABASE_HOST
+             - name: DATABASE_USERNAME
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: DATABASE_USERNAME
+             - name: DATABASE_PASSWORD
+               valueFrom:
+                 configMapKeyRef:
+                    name: leaf-envprops
+                    key: DATABASE_PASSWORD
+             - name: DATABASE_DB_PORTAL
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: DATABASE_DB_PORTAL
+             - name: DATABASE_DB_NEXUS
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: DATABASE_DB_NEXUS
+             - name: DATABASE_DB_DIRECTORY
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: DATABASE_DB_DIRECTORY
+             - name: DATABASE_DB_CONFIG
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: DATABASE_DB_CONFIG
+             - name: APP_URL_NEXUS
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: APP_URL_NEXUS
+             - name: APP_HTTP_HOST
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: APP_HTTP_HOST
+             - name: APP_EMAIL_FROM
+               valueFrom:
+                  configMapKeyRef:
+                    name: leaf-envprops
+                    key: APP_EMAIL_FROM
+             - name: APP_AUTH_TYPE
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: APP_AUTH_TYPE
+             - name: APP_URL_AUTH
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: APP_URL_AUTH
+             - name: APP_CIPHER_KEY
+               valueFrom:
+                 configMapKeyRef:
+                   name: leaf-envprops
+                   key: APP_CIPHER_KEY 
+            volumeMounts:
+            - mountPath: /var/www/html/LEAF_Request_Portal/templates_c/mailer
+              subPath: LEAF_Request_Portal/templates_c/mailer
+              name: leaf-volume
+          restartPolicy: OnFailure 
+

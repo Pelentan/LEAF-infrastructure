@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: leaf-envprops
+data:
+  S3_BUCKET_NAME: "leaf-preprod-bucket-uploads"
+  AWS_REGION: "us-gov-west-1"
+  APP_AUTH_TYPE: "cookie"
+  APP_CIPHER_KEY: "X,jnQ^-Kp$KE{:^{TaMc-}!ECK${F5Ys"
+  APP_EMAIL_FROM: "noreply@leaf.gov"
+  APP_HTTP_HOST: "leaf-preprod.va.gov"
+  APP_URL_AUTH: "auth.leaf-preprod.va.gov"
+  APP_URL_NEXUS: "https://leaf-preprod.va.gov/LEAF_Nexus/"
+  DATABASE_DB_CONFIG: "leaf_config"
+  DATABASE_DB_DIRECTORY: "national_orgchart"
+  DATABASE_DB_NEXUS: "national_orgchart"
+  DATABASE_DB_PORTAL: "leaf_portal"
+  DATABASE_HOST: "leaf-preprod-mysql-db.ccrn7zmvpbm4.us-gov-west-1.rds.amazonaws.com"
+  DATABASE_PASSWORD: "LeafPreprod2019"
+  DATABASE_USERNAME: "leafadmin"
+
