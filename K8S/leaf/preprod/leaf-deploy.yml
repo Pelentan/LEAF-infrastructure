@@ -47,11 +47,11 @@ spec:
         imagePullPolicy: "Always"
         resources:
           limits:
-            memory: "65G"
-            cpu: "16"
+            memory: "24000Mi"
+            cpu: "137m"
         env:
-          #  - name: LAST_BUILD_DATE
-          #    value: "Thur, January 1, 1970 00:00:00 GMT"
+           - name: LAST_BUILD_DATE
+             value: "Thur, January 1, 1970 00:00:00 GMT"
           #  - name: CDW_HOST
           #    valueFrom:
           #       secretKeyRef:
@@ -87,7 +87,7 @@ spec:
         envFrom:
           - configMapRef:
               name: leaf-envprops
-          - configMapRef:
+          - secretRef:
               name: cdw-access
 
   
