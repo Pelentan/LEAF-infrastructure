@@ -4,6 +4,7 @@ import { Subnet, Volume, Vpc, SecurityGroup, Peer, Port, Connections } from '@aw
 import * as efs from '@aws-cdk/aws-efs';
 import * as cr from '@aws-cdk/custom-resources';
 import * as ssm from '@aws-cdk/aws-ssm';
+import * as iam from '@aws-cdk/aws-iam'
 
 
 // Auto imports.
@@ -91,13 +92,13 @@ export class LeafAncilStack extends cdk.Stack {
      * Create EFS for specific Domain named by orgName input
      */
 
-    const domain_efs = new efs.FileSystem(this, org_name, {
-      fileSystemName: org_name,
-      vpc: vpc,
-      securityGroup: efs_sg,
-      performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
-      lifecyclePolicy: efs.LifecyclePolicy.AFTER_60_DAYS,
-    })
+    // const domain_efs = new efs.FileSystem(this, org_name, {
+    //   fileSystemName: org_name,
+    //   vpc: vpc,
+    //   securityGroup: efs_sg,
+    //   performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
+    //   lifecyclePolicy: efs.LifecyclePolicy.AFTER_60_DAYS,
+    // })
 
 
 
