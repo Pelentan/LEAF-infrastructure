@@ -23,10 +23,6 @@ spec:
     spec:
       nodeSelector:
         node-role.kubernetes.io/worker: worker
-      securityContext:
-        sysctls:
-        - name: net.ipv4.ip_local_port_range
-          value: "15000 64000"      
       #securityContext:
         #runAsUser: 33
         #fsGroup: 33
@@ -41,22 +37,28 @@ spec:
        - name: regcred
       containers:
       - name: leaf-pods
-        image: pelentan/leaf-app-base:1.3
+        #image: avdockerid/leaf:prod
+        image: pelentan/leaf-app-base:1.1
         imagePullPolicy: "Always"
-        resources:
-          limits:
-            memory: "24000Mi"
-            cpu: "137m"
         env:
            - name: LAST_BUILD_DATE
              value: "Thur, January 1, 1970 00:00:00 GMT"
-        envFrom:
-          - configMapRef:
-              name: leaf-envprops
-          - secretRef:
-              name: cdw-access
-          - secretRef:
-              name: krb-access
+           - name: CDW_HOST
+             valueFrom:
+                secretKeyRef:
+                   name: cdw-access
+                   key: host
+           - name: CDW_USER
+             valueFrom:
+                secretKeyRef:
+                   name: cdw-access
+                   key: user
+           - name: CDW_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                   name: cdw-access
+                   key: password
+
   
         lifecycle:
           postStart: # this could be a configmap and volume mount -patrick
@@ -70,7 +72,6 @@ spec:
         volumeMounts:
         - mountPath: /var/www/
           name: leaf-volume
-        
       #volumes:
       #- hostPath:
        #   path: /var/www/html

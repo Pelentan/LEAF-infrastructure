@@ -26,7 +26,7 @@ spec:
       securityContext:
         sysctls:
         - name: net.ipv4.ip_local_port_range
-          value: "15000 64000"      
+          value: "15000 64000"
       #securityContext:
         #runAsUser: 33
         #fsGroup: 33
@@ -34,7 +34,7 @@ spec:
       volumes:
         - name: leaf-volume
           awsElasticBlockStore:
-            volumeID: vol-062ce575ba011b9fc
+            volumeID: vol-0d21ca53f30b0a276
           #persistentVolumeClaim:
             #claimName: leaf-pvc
       imagePullSecrets:
@@ -57,9 +57,9 @@ spec:
               name: cdw-access
           - secretRef:
               name: krb-access
-  
+
         lifecycle:
-          postStart: # this could be a configmap and volume mount -patrick
+          postStart:
             exec:
               command:
                 - "/bin/sh"
@@ -70,9 +70,10 @@ spec:
         volumeMounts:
         - mountPath: /var/www/
           name: leaf-volume
-        
+          
       #volumes:
       #- hostPath:
        #   path: /var/www/html
         #  type: DiriectoryOrCreate
         #name: leaf-volume
+
