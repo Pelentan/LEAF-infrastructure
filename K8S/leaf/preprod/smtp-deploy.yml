@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smtp-deploy
+  labels:
+    app: smtp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: smtp
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        name: smtp
+        app: smtp
+    spec:
+      #securityContext:
+        #runAsUser: 33
+        #fsGroup: 33
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: smtp-pods
+        image: kurzdigital/fake-smtp
+        ports:
+        - name: port25
+          containerPort: 25
+        - name: port8080
+          containerPort: 8080
+        env:
+        - name: SMTP_PORT
+          value: "25"
+        - name: SERVER_PORT
+          value: "8080"
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: "/mail"
+        - name: APP_USER
+          value: "tester"
+        - name: APP_PASSWORD
+          value: "tester"
+        - name: MAX_NUMBER_EMAILS
+          value: "40000"
+
+
+
+
+
+
+
