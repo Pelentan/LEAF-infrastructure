@@ -45,8 +45,8 @@ spec:
         imagePullPolicy: "Always"
         resources:
           limits:
-            memory: "24000Mi"
-            cpu: "137m"
+            memory: "240000000Mi"
+            cpu: "13700000m"
         env:
            - name: LAST_BUILD_DATE
              value: "Thur, January 1, 1970 00:00:00 GMT"
