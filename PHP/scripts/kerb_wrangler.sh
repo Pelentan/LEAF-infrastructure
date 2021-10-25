@@ -19,15 +19,26 @@ renew_kerberos () {
     echo "Renewed ticket"
 }
 
+set_cache_perms () { 
+    # This is so the application that needs to use the link can access the cache file.   
+    chown www-data:www-data $cache
+    ls -lah $cache
+}
+
 init_kerberos
+set_cache_perms
 
 while true; do
     sleep 9.5h
-    if [ $runix > date +%s]; then
+    tNow=$(date +%s)
+    if [ $runix > $tNow ]; then
+        echo "renewing"
         renew_kerberos
     else
+        echo "re-initing"
         init_kerberos
     fi
+    set_cache_perms
 done
 
 
