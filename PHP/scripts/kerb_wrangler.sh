@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # This should keep the ticket up todate.  It uses a refresh every 9 1/2 hours.  Then a day short of the final refresh
-# it does a full renewal.  Hopefully.  To start this we'll probably for now have to use the nohup command.  I don't think 
-# the & trick will work because I think that stops when the session ends but I'm not certain in this case.
+# it does a full renewal.  Hopefully.  
 
 export cache="/tmp/krb5cc_`id -u`"
 
@@ -11,7 +10,6 @@ init_kerberos () {
     echo ${KRB_PASSWORD} | kinit ${krb_login}
     renew_until=$(klist | grep "renew until" | sed 's/renew until //')
     let runix=$(date -d "$renew_until" +%s)-86400
-    echo "Started or reinitialized kerberos"
 }
 
 renew_kerberos () {
@@ -25,19 +23,23 @@ set_cache_perms () {
     ls -lah $cache
 }
 
-init_kerberos
-set_cache_perms
-
+# init_kerberos
+# set_cache_perms
+runix=0
 while true; do
     sleep 9.5h
     tNow=$(date +%s)
+    echo "---------------------------------------------------" >> kerb_log.log
+    date >> kerb_log.log
     if [ $runix > $tNow ]; then
-        echo "renewing"
+        echo "Refreshing kerberos ticket" >> kerb_log.log
         renew_kerberos
     else
-        echo "re-initing"
+        echo "Starting or reinitializing kerberos" >> kerb_log.log
         init_kerberos
     fi
+    echo "Complete" >> kerb_log.log
+    klist >> kerb_log.log
     set_cache_perms
 done
 
