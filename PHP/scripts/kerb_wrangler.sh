@@ -16,7 +16,7 @@ renew_kerberos () {
     current_expire=$(klist | grep "krbtgt/VHA.MED.VA.GOV@VHA.MED.VA.GOV")
     kinit -R -c $cache 
     new_expire=$(klist | grep "krbtgt/VHA.MED.VA.GOV@VHA.MED.VA.GOV")
-    if [ current_expire -eq new_expire ]
+    if [ "$current_expire" = "$new_expire" ]
     then
         echo "***** Failed renew.  Attempting reinit" >> kerb_log.log
         init_kerberos
