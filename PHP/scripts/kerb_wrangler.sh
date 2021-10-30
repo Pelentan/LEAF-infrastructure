@@ -13,8 +13,16 @@ init_kerberos () {
 }
 
 renew_kerberos () {
-    kinit -R -c $cache || ! echo "Renewal failed." || exit 3
-    echo "Renewed ticket"
+    current_expire=$(klist | grep "krbtgt/VHA.MED.VA.GOV@VHA.MED.VA.GOV")
+    kinit -R -c $cache 
+    new_expire=$(klist | grep "krbtgt/VHA.MED.VA.GOV@VHA.MED.VA.GOV")
+    if [ current_expire -eq new_expire ]
+    then
+        echo "***** Failed renew.  Attempting reinit" >> kerb_log.log
+        init_kerberos
+    else
+        echo "Renewed ticket"
+    fi
 }
 
 set_cache_perms () { 
@@ -27,11 +35,12 @@ set_cache_perms () {
 # set_cache_perms
 runix=0
 while true; do
-    sleep 9.5h
     tNow=$(date +%s)
     echo "---------------------------------------------------" >> kerb_log.log
+    echo "Checking time stamps:  runix: $runix  now: $tNow" >> kerb_log.log
     date >> kerb_log.log
-    if [ $runix > $tNow ]; then
+    if [ $runix -gt $tNow ] 
+    then
         echo "Refreshing kerberos ticket" >> kerb_log.log
         renew_kerberos
     else
@@ -41,6 +50,7 @@ while true; do
     echo "Complete" >> kerb_log.log
     klist >> kerb_log.log
     set_cache_perms
+    sleep 9.5h
 done
 
 
