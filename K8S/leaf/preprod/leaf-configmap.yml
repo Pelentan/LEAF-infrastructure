@@ -18,4 +18,6 @@ data:
   DATABASE_HOST: "leaf-preprod-mysql-db.ccrn7zmvpbm4.us-gov-west-1.rds.amazonaws.com"
   DATABASE_PASSWORD: "LeafPreprod2019"
   DATABASE_USERNAME: "leafadmin"
+  SMTP_ROOT: "leafnoreply@va.gov"
+  LEAF_MAIL_HUB: "smtp.va.gov:25"
 
