@@ -7,7 +7,7 @@ const app = new cdk.App();
 
 new LeafAncilStack(app, 'LeafAncilStack', {
   env: { 
-    account: 'vaec-aws-gov-valeaf', 
+    account: '873629351884', 
     region: 'us-gov-west-1',
   },
   tags: {
