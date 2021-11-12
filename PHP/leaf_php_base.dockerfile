@@ -107,7 +107,7 @@ RUN ln -s /etc/apache2/mods-available/speling.load /etc/apache2/mods-enabled/spe
 RUN service apache2 restart 
 # RUN apache2ctl -M
 
-COPY docker-php-entrypoint /usr/local/bin/docker-php-entrypoint
+COPY scripts/docker-php-entrypoint /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
 RUN chmod +x /var/www/html/
