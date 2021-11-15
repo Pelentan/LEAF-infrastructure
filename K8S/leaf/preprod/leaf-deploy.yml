@@ -41,12 +41,12 @@ spec:
        - name: regcred
       containers:
       - name: leaf-pods
-        image: pelentan/leaf-app-base:1.3
+        image: pelentan/leaf-app-base:1.3.1
         imagePullPolicy: "Always"
-        resources:
-          limits:
-            memory: "240000000Mi"
-            cpu: "13700000m"
+        # resources:
+        #   limits:
+        #     memory: "240000000Mi"
+        #     cpu: "13700000m"
         env:
            - name: LAST_BUILD_DATE
              value: "Thur, January 1, 1970 00:00:00 GMT"
@@ -58,13 +58,13 @@ spec:
           - secretRef:
               name: krb-access
   
-        lifecycle:
-          postStart: 
-            exec:
-              command:
-                - "/bin/bash"
-                - "-c"
-                - "startmeup.sh"
+        # lifecycle:
+        #   postStart: 
+        #     exec:
+        #       command:
+        #         - "/bin/bash"
+        #         - "-c"
+        #         - "startmeup.sh"
               
         ports:
         - containerPort: 80
