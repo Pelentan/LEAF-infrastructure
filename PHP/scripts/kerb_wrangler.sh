@@ -12,7 +12,7 @@ init_kerberos () {
     then
         renew_until=$(klist | grep "renew until" | sed 's/renew until //')
         let runix=$(date -d "$renew_until" +%s)-86400 || let runix=0
-        if [ 10 -gt $runix ]
+        if [ $tNow -gt $runix ]
         then
             echo "Dates are not working.  renew_until: $renew_until vs runix: $runix"
             sleep 30s
