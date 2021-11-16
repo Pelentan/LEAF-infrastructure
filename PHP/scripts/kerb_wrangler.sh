@@ -70,6 +70,6 @@ while true; do
     echo "Complete loop" 
     klist >> kerb_log.log
     set_things
-    #sleep 9.5h
-    sleep 30s
+    sleep 9.5h
+    # sleep 30s
 done

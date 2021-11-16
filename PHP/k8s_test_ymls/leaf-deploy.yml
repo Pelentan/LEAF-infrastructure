@@ -37,13 +37,13 @@ spec:
           - secretRef:
               name: krb-access
   
-        lifecycle:
-          postStart: 
-            exec:
-              command:
-                - "/bin/bash"
-                - "-c"
-                - "/etc/init.d/krb_wrangler.sh"
+        # lifecycle:
+        #   postStart: 
+        #     exec:
+        #       command:
+        #         - "/bin/bash"
+        #         - "-c"
+        #         - "/etc/init.d/krb_wrangler.sh"
               
         ports:
         - containerPort: 80
