@@ -19,8 +19,6 @@ set -e
 
 echo "root=$SMTP_ROOT" >> /etc/ssmtp/ssmtp.conf
 echo "nmailhub=$LEAF_MAIL_HUB" >> /etc/ssmtp/ssmtp.conf
-/bin/bash /etc/init.d/krb_wrangler.sh
-
 
 if [ "${1#-}" != "$1" ]; then
 	set -- apache2-foreground "$@"
