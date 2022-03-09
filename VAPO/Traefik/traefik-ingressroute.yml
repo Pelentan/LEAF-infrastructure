@@ -1,0 +1,29 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard-secure
+  namespace: traefik
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`dashboard.traefik.dev.vovina-tisa.net`)
+    services:
+    - name: traefik-dashboard
+      port: 9000
+    middlewares:
+    - name: dashboard-auth
+    - name: dashboard-rewrite
+  - kind: Rule
+    match: Host(`dashboard.traefik.dev.vovina-tisa.net`) && PathPrefix(`/api`)
+    services:
+    - name: traefik-dashboard
+      port: 9000
+    middlewares:
+    - name: dashboard-auth
+  - kind: Rule
+    match: Host(`metrics.traefik.dev.vovina-tisa.net`)
+    services:
+    - name: traefik-metrics
+      port: 9100

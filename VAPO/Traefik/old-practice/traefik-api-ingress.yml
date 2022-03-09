@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-dashboard-api
+  namespace: traefik
+spec:
+  rules:
+  - host: dashboard.traefik.dev.vovina-tisa.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: traefik-dashboard
+            port:
+              number: 9000
+        path: /api/
+        pathType: Prefix
