@@ -1,0 +1,51 @@
+version: "3.7"
+x-default-opts: 
+    &default-opts
+    logging:
+      options:
+        max-size: "1m" 
+
+services:
+    leaf-nfs:
+        <<: *default-opts
+        image: leaf-nfs
+        container_name: leaf_nfs
+        build:
+          context: ./
+          dockerfile: Dockerfile
+          # args:
+          #   - "-c"
+          #   - >
+          #     while true; do
+          #       date >> /pod-data/index.html;
+
+          #       echo Hello from the second container >> /pod-data/index.html;
+          #       sleep 1;
+          #     done
+        restart: unless-stopped
+        
+        security_opt:
+            - no-new-privileges:true
+        networks:
+            - leaf-nfs
+        # ports:
+        #     -   target: 80
+        #         published: 80
+        #         protocol: tcp
+        #         mode: host
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
+            - data:/data
+        # secrets:
+        #     - aws_access_key_id
+        #     - aws_secret_access_key
+
+        # command:
+
+networks:
+    leaf-nfs:
+        external: true 
+
+volumes:
+    data:
+        external: false

@@ -98,6 +98,7 @@ RUN apt-get install -y ssmtp && \
   echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
 
 COPY etc/ssmtp.conf /etc/ssmtp/
+RUN chmod 777 /etc/ssmtp/ssmtp.conf
 COPY etc/swagger-proxy.conf /etc/apache2/conf-enabled/
 COPY etc/000-default.conf /etc/apache2/sites-enabled/
 COPY etc/default-ssl.conf /etc/apache2/sites-enabled/
@@ -122,4 +123,4 @@ RUN apt-get install -y subversion libapache2-mod-svn
 
 # Adding in network tools
 RUN apt-get install -y net-tools
-RUN apt-get update && apt-get --allow-unauthenticated -y upgrade
+# RUN apt-get update && apt-get --allow-unauthenticated -y upgrade
