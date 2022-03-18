@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leaf-mysql-dev
+  labels:
+    app: leaf
+spec:
+  selector:
+    matchLabels:
+      app: leaf
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        name: leaf-mysql
+        app: leaf
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: leaf-mysql
+        image: pelentan/leaf-mysql:2.0
+        imagePullPolicy: "Always"
+        envFrom:
+          - configMapRef:
+              name: leaf-envprops
+          - secretRef:
+              name: mysql-secrets             
+        ports:
+          - name: mysql
+            containerPort: 3306
+            protocol: TCP
+        volumeMounts:
+          - name: leaf-mysql-dev-storage
+            mountPath: /var/lib/mysql
+      volumes:
+        - name: leaf-mysql-dev-storage
+          persistentVolumeClaim:
+            claimName: leaf-dev-mysql
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: leaf-dev-mysql
+  labels: 
+    app: leaf
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: leaf
+  type: ClusterIP

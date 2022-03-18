@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: leaf-mysql-envprops
+data:
+  MYSQL_ROOT_HOST: "%"
+  MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+  MYSQL_USER: "tester"
