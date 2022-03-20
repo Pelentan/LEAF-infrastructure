@@ -35,7 +35,7 @@ spec:
             containerPort: 3306
             protocol: TCP
         volumeMounts:
-          - name: leaf-mysql-dev-storage
+          - name: leaf-mysql-dev-storage  
             mountPath: /var/lib/mysql
       volumes:
         - name: leaf-mysql-dev-storage

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-dev-mysql
+  namespace: argocd
+spec:
+  project: leaf
+  source: 
+    repoURL: https://github.com/department-of-veterans-affairs/LEAF-infrastructure/tree/leaf-2_0/base-image-build
+    targetRevision: HEAD
+    path: VAPO/MySQL
+  destination: 
+    server: https://kubernetes.default.svc
+    namespace: leaf-mysql
+  syncPolicy: 
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true
