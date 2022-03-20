@@ -8,7 +8,7 @@ spec:
   source: 
     repoURL: https://github.com/department-of-veterans-affairs/LEAF-infrastructure/tree/leaf-2_0/base-image-build
     targetRevision: HEAD
-    path: VAPO/MySQL
+    path: VAPO/MySQL/manifests
   destination: 
     server: https://kubernetes.default.svc
     namespace: leaf-mysql
